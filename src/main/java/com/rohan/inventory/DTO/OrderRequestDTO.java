@@ -7,5 +7,8 @@ import lombok.Setter;
 @Setter
 public class OrderRequestDTO {
     private String productName;
-    private String quantity;
+    private int quantity;
+    private String user;
+    private String location;
+    private String price;
 }
