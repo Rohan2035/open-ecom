@@ -26,7 +26,7 @@ public class ProductController {
     }
 
     @GetMapping("/getproductname")
-    public List<ProductResponseDTO> getProductName(@RequestParam("productName") String productName) {
+    public ProductResponseDTO getProductName(@RequestParam("productName") String productName) {
         return productService.getProductByProductName(productName);
     }
 

@@ -22,17 +22,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponseDTO> getAllProduct() {
         List<Product> productList = productRepository.findAll();
+
         return productList.stream()
                 .map(this::productResponseDTOMapper)
                 .toList();
     }
 
     @Override
-    public List<ProductResponseDTO> getProductByProductName(String productName) {
-        List<Product> productList = productRepository.findByProductName(productName);
-        return productList.stream()
-                .map(this::productResponseDTOMapper)
-                .toList();
+    public ProductResponseDTO getProductByProductName(String productName) {
+        Product product = productRepository.findByProductName(productName)
+                .orElseThrow(() -> new RuntimeException("Product Not Found"));
+
+        return this.productResponseDTOMapper(product);
     }
 
     @Override
@@ -44,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
             LOG.error("Exception: ", e);
             return "Failed";
         }
+
         return "Success";
     }
 
@@ -55,6 +57,7 @@ public class ProductServiceImpl implements ProductService {
             LOG.error("Exception: ", e);
             return "Failed";
         }
+
         return "Success";
     }
 
@@ -65,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
         productResponseDTO.setProductCategory(product.getProductCategory());
         productResponseDTO.setProductPrice(product.getProductPrice());
         productResponseDTO.setProductQuantity(product.getProductQuantity());
+
         return productResponseDTO;
     }
 
@@ -75,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
         product.setProductCategory(productRequestDTO.getProductCategory());
         product.setProductDescription(productRequestDTO.getProductDescription());
         product.setProductQuantity(productRequestDTO.getProductQuantity());
+
         return product;
     }
 }
