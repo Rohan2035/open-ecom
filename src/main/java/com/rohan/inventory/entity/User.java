@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Table(name = "user_details")
 @Getter
@@ -34,7 +32,4 @@ public class User {
 
     @Column(name = "user_address")
     private String userAddress;
-
-    @OneToMany(mappedBy = "user")
-    private List<Order> orderList;
 }

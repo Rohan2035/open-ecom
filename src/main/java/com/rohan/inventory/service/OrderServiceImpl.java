@@ -2,6 +2,7 @@ package com.rohan.inventory.service;
 
 import com.rohan.inventory.dto.OrderRequestDTO;
 import com.rohan.inventory.dto.OrderResponseDTO;
+import com.rohan.inventory.dto.ViewOrderRequestDTO;
 import com.rohan.inventory.entity.Order;
 import com.rohan.inventory.entity.Product;
 import com.rohan.inventory.entity.User;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDTO viewOrder(String username) {
+    public List<OrderResponseDTO> viewOrder(ViewOrderRequestDTO orderRequestDTO) {
         return null;
     }
 
@@ -87,8 +89,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setProductId(productId);
-        order.setProductPrice(orderRequestDTO.getProductPrice());
         order.setProductQuantity(orderRequestDTO.getProductQuantity());
+        order.setProductPrice(orderRequestDTO.getProductPrice().multiply(BigDecimal.valueOf(orderRequestDTO.getProductQuantity())));
         order.setOrderDate(LocalDateTime.now());
         return order;
     }
