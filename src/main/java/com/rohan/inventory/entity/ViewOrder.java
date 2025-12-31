@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,8 +25,11 @@ public class ViewOrder {
     @Column(name = "ORDER_CD")
     private String orderCode;
 
+    @Column(name = "ORDER_TIME")
+    private LocalDateTime orderTime;
+
     @Column(name = "ORDER_DATE")
-    private LocalDateTime orderDate;
+    private LocalDate orderDate;
 
     @Column(name = "PRODUCT_PRICE")
     private BigDecimal productPrice;

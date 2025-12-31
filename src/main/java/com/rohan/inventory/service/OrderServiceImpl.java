@@ -22,9 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -56,6 +58,8 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new UserDetailsNotFoundException(USER_NOT_FOUND_MSG +
                         orderRequestDTO.getUserEmail()));
 
+        String orderCode = generateOrderCode(user.getFirstName());
+
         List<Order> orders = new ArrayList<>();
         for(OrderRequestDTO.InnerOrderRequestDTO orderRequests : orderRequestDTO.getOrderRequests()) {
             Product product = productRepository.findByProductName(orderRequests.getProductName())
@@ -67,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new ProductQuantityExceededException(PRODUCT_QUANTITY_MSG + orderRequests.getProductName());
             }
 
-            Order order = this.mapOrder(orderRequests, user, product.getProductId());
+            Order order = this.mapOrder(orderRequests, user, product.getProductId(), orderCode);
             orders.add(order);
         }
 
@@ -97,17 +101,35 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    protected Order mapOrder(OrderRequestDTO.InnerOrderRequestDTO orderRequestDTO, User user, Integer productId) {
+    protected Order mapOrder(OrderRequestDTO.InnerOrderRequestDTO orderRequestDTO, User user,
+            Integer productId, String orderCode) {
+
         Order order = new Order();
         order.setUser(user);
+        order.setOrderCode(orderCode);
         order.setProductId(productId);
         order.setProductQuantity(orderRequestDTO.getProductQuantity());
         order.setProductPrice(orderRequestDTO.getProductPrice().multiply(BigDecimal.valueOf(orderRequestDTO.getProductQuantity())));
-        order.setOrderDate(LocalDateTime.now());
+        order.setOrderDate(LocalDate.now());
+        order.setOrderTime(LocalDateTime.now());
         return order;
     }
 
     protected ViewOrderResponseDTO mapOrderResponse(Order order) {
         return null;
+    }
+
+    private static String generateOrderCode(String username) {
+        String randomCode = UUID.randomUUID().toString()
+                .substring(0, 3)
+                .replace("_", "");
+
+        String localDate = LocalDate.now().toString().replace("-", "");
+
+        if(username.length() > 5) {
+            username = username.substring(0, 3);
+        }
+
+        return username.toLowerCase() + localDate + randomCode;
     }
 }

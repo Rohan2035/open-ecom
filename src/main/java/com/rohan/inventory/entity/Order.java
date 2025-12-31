@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,11 +19,14 @@ public class Order {
     @Column(name = "ORDER_ID")
     private Integer orderId;
 
-    @Column(name = "ORDER_CD", unique = true)
+    @Column(name = "ORDER_CD")
     private String orderCode;
 
+    @Column(name = "ORDER_TIME")
+    private LocalDateTime orderTime;
+
     @Column(name = "ORDER_DATE")
-    private LocalDateTime orderDate;
+    private LocalDate orderDate;
 
     @Column(name = "PRODUCT_QUANTITY")
     private Integer productQuantity;
@@ -36,13 +40,4 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @PrePersist
-    public void generateUniqueCode() {
-        if(!StringUtils.hasLength(this.orderCode)) {
-            this.orderCode = UUID.randomUUID().toString()
-                    .substring(0, 6)
-                    .replace("_", "");
-        }
-    }
 }
