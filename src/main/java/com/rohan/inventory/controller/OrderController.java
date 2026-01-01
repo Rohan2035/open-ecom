@@ -24,10 +24,9 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/getorder")
-    public List<ViewOrderResponseDTO> getOrder(@RequestBody ViewOrderRequestDTO requestDTO) {
+    public ViewOrderResponseDTO getOrder(@RequestBody ViewOrderRequestDTO requestDTO) {
         // Todo Add Logger
-        orderService.viewOrder(requestDTO);
-        return null;
+        return orderService.viewOrder(requestDTO);
     }
 
     @PostMapping("/addorder")

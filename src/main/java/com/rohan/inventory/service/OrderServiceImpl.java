@@ -1,8 +1,11 @@
 package com.rohan.inventory.service;
 
+import com.rohan.inventory.dto.OrderProductResponseDTO;
 import com.rohan.inventory.dto.OrderRequestDTO;
+import com.rohan.inventory.dto.OrderResponseDTO;
 import com.rohan.inventory.dto.ViewOrderResponseDTO;
 import com.rohan.inventory.dto.ViewOrderRequestDTO;
+import com.rohan.inventory.dto.compositekey.OrderKey;
 import com.rohan.inventory.entity.Order;
 import com.rohan.inventory.entity.Product;
 import com.rohan.inventory.entity.User;
@@ -25,8 +28,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -86,14 +92,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<ViewOrderResponseDTO> viewOrder(ViewOrderRequestDTO orderRequestDTO) {
+    public ViewOrderResponseDTO viewOrder(ViewOrderRequestDTO orderRequestDTO) {
         List<ViewOrder> orderList = viewOrderDetailsRepository.findOrders(
           orderRequestDTO.getUserEmail(),
           orderRequestDTO.getOrderDate(),
           orderRequestDTO.getOrderCode()
         ).orElseThrow(() -> new OrderNotFoundException(ORDER_NOT_FOUND));
-
-        return null;
+        return this.mapOrderDTO(orderList);
     }
 
     @Override
@@ -115,8 +120,33 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    protected ViewOrderResponseDTO mapOrderResponse(Order order) {
-        return null;
+    protected ViewOrderResponseDTO mapOrderDTO(List<ViewOrder> viewOrderList) {
+        ViewOrderResponseDTO responseDTO = new ViewOrderResponseDTO();
+
+        if(viewOrderList.isEmpty()) {
+            return responseDTO;
+        }
+
+        String orderedBy = viewOrderList.get(0).getUser().getUserName();
+        responseDTO.setOrderedBy(orderedBy);
+
+        List<OrderResponseDTO> orderResponseDTOList = new ArrayList<>();
+        Map<OrderKey, List<ViewOrder>> productMap = viewOrderList.stream()
+                        .collect(Collectors.groupingBy(order ->
+                                new OrderKey(order.getOrderCode(), order.getOrderDate())));
+
+        for(OrderKey key : productMap.keySet()) {
+            OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
+            orderResponseDTO.setOrderCode(key.orderCode());
+            orderResponseDTO.setOrderDate(key.orderDate());
+
+            List<OrderProductResponseDTO> productResponseDTOList = new ArrayList<>();
+
+            orderResponseDTOList.add(orderResponseDTO);
+        }
+
+        responseDTO.setOrders(orderResponseDTOList);
+        return responseDTO;
     }
 
     private static String generateOrderCode(String username) {

@@ -6,7 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ public class ViewOrderDetailsRepositoryImpl implements ViewOrderDetailsRepositor
     private EntityManager entityManager;
 
     @Override
-    public Optional<List<ViewOrder>> findOrders(String userEmail, LocalDateTime orderDate, String orderCode) {
+    public Optional<List<ViewOrder>> findOrders(String userEmail, LocalDate orderDate, String orderCode) {
         String jpqlQuery = """
                     SELECT o FROM ViewOrder o
                     WHERE o.user.email = :userEmail
