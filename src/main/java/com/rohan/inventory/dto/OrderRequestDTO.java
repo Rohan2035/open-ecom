@@ -7,7 +7,9 @@ import java.util.List;
 
 @Data
 public class OrderRequestDTO {
+
     private String userEmail;
+    private String address;
     private List<InnerOrderRequestDTO> orderRequests;
 
     @Data

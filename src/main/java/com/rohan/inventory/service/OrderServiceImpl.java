@@ -1,5 +1,6 @@
 package com.rohan.inventory.service;
 
+import com.rohan.inventory.dto.OrderNativeSqlResponseDTO;
 import com.rohan.inventory.dto.OrderProductResponseDTO;
 import com.rohan.inventory.dto.OrderRequestDTO;
 import com.rohan.inventory.dto.OrderResponseDTO;
@@ -77,9 +78,11 @@ public class OrderServiceImpl implements OrderService {
                 throw new ProductQuantityExceededException(PRODUCT_QUANTITY_MSG + orderRequests.getProductName());
             }
 
-            Order order = this.mapOrder(orderRequests, user, product.getProductId(), orderCode);
+            Order order = this.mapOrder(orderRequests, user, product.getProductId(), orderCode, orderRequestDTO.getAddress());
             orders.add(order);
         }
+
+        // Payment Gateway Logic
 
         orderRepository.saveAll(orders);
 
@@ -93,12 +96,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ViewOrderResponseDTO viewOrder(ViewOrderRequestDTO orderRequestDTO) {
-        List<ViewOrder> orderList = viewOrderDetailsRepository.findOrders(
-          orderRequestDTO.getUserEmail(),
-          orderRequestDTO.getOrderDate(),
-          orderRequestDTO.getOrderCode()
-        ).orElseThrow(() -> new OrderNotFoundException(ORDER_NOT_FOUND));
-        return this.mapOrderDTO(orderList);
+        List<OrderNativeSqlResponseDTO> sqlResponse = viewOrderDetailsRepository.fetchOrders(
+                orderRequestDTO.getUserEmail(),
+                orderRequestDTO.getOrderDate(),
+                orderRequestDTO.getOrderCode()
+        );
+
+        return null;
     }
 
     @Override
@@ -107,46 +111,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     protected Order mapOrder(OrderRequestDTO.InnerOrderRequestDTO orderRequestDTO, User user,
-            Integer productId, String orderCode) {
+            Integer productId, String orderCode, String address) {
 
         Order order = new Order();
         order.setUser(user);
         order.setOrderCode(orderCode);
+        order.setOrderAddress(address);
         order.setProductId(productId);
         order.setProductQuantity(orderRequestDTO.getProductQuantity());
         order.setProductPrice(orderRequestDTO.getProductPrice().multiply(BigDecimal.valueOf(orderRequestDTO.getProductQuantity())));
         order.setOrderDate(LocalDate.now());
         order.setOrderTime(LocalDateTime.now());
         return order;
-    }
-
-    protected ViewOrderResponseDTO mapOrderDTO(List<ViewOrder> viewOrderList) {
-        ViewOrderResponseDTO responseDTO = new ViewOrderResponseDTO();
-
-        if(viewOrderList.isEmpty()) {
-            return responseDTO;
-        }
-
-        String orderedBy = viewOrderList.get(0).getUser().getUserName();
-        responseDTO.setOrderedBy(orderedBy);
-
-        List<OrderResponseDTO> orderResponseDTOList = new ArrayList<>();
-        Map<OrderKey, List<ViewOrder>> productMap = viewOrderList.stream()
-                        .collect(Collectors.groupingBy(order ->
-                                new OrderKey(order.getOrderCode(), order.getOrderDate())));
-
-        for(OrderKey key : productMap.keySet()) {
-            OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
-            orderResponseDTO.setOrderCode(key.orderCode());
-            orderResponseDTO.setOrderDate(key.orderDate());
-
-            List<OrderProductResponseDTO> productResponseDTOList = new ArrayList<>();
-
-            orderResponseDTOList.add(orderResponseDTO);
-        }
-
-        responseDTO.setOrders(orderResponseDTOList);
-        return responseDTO;
     }
 
     private static String generateOrderCode(String username) {

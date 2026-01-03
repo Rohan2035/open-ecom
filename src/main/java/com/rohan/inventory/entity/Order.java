@@ -37,6 +37,9 @@ public class Order {
     @Column(name = "product_id")
     private Integer productId;
 
+    @Column(name = "ADDRESS")
+    private String orderAddress;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
