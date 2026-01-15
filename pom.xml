@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.rohan</groupId>
-	<artifactId>inventory</artifactId>
+	<artifactId>open-ecom</artifactId>
 	<version>0.0.1</version>
-	<name>inventory</name>
+	<name>Open Ecom</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
