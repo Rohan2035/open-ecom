@@ -4,14 +4,13 @@ import com.rohan.ecom.dto.OrderNativeSqlResponseDTO;
 import com.rohan.ecom.dto.OrderProductResponseDTO;
 import com.rohan.ecom.dto.OrderRequestDTO;
 import com.rohan.ecom.dto.OrderResponseDTO;
-import com.rohan.ecom.dto.ViewOrderResponseDTO;
 import com.rohan.ecom.dto.ViewOrderRequestDTO;
+import com.rohan.ecom.dto.ViewOrderResponseDTO;
 import com.rohan.ecom.dto.compositekey.OrderKey;
 import com.rohan.ecom.entity.Order;
 import com.rohan.ecom.entity.Product;
 import com.rohan.ecom.entity.User;
 import com.rohan.ecom.exceptions.OpenEcomException;
-import com.rohan.ecom.exceptions.ProductNotFoundException;
 import com.rohan.ecom.exceptions.ProductQuantityExceededException;
 import com.rohan.ecom.exceptions.UserDetailsNotFoundException;
 import com.rohan.ecom.repository.OrderRepository;
@@ -30,10 +29,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +50,6 @@ public class OrderServiceImpl implements OrderService {
     private final UserDetailsRepository userDetailsRepository;
     private final ProductRepository productRepository;
     private final ViewOrderDetailsRepository viewOrderDetailsRepository;
-    private final ExecutorService pool;
     private final PaymentService paymentService;
 
     @Autowired
@@ -64,43 +61,54 @@ public class OrderServiceImpl implements OrderService {
         this.productRepository = productRepository;
         this.viewOrderDetailsRepository = viewOrderDetailsRepository;
         this.paymentService = paymentService;
-        this.pool = Executors.newFixedThreadPool(1);
     }
 
     @Override
     @Transactional
     public String addOrder(OrderRequestDTO orderRequestDTO) {
+
+
+
+        LOG.info("Fetching User");
         User user = userDetailsRepository.findByEmail(orderRequestDTO.getUserEmail())
                 .orElseThrow(() -> new UserDetailsNotFoundException(USER_NOT_FOUND_MSG +
                         orderRequestDTO.getUserEmail()));
+        LOG.info("User Fetched");
 
-        Future<String> futureOrderCode = pool.submit(() -> generateOrderCode(user.getFirstName()));
+        LOG.info("Creating Product List");
+        Set<String> productNames = orderRequestDTO.getOrderRequests().stream()
+                .map(OrderRequestDTO.InnerOrderRequestDTO::getProductName)
+                .collect(Collectors.toSet());
 
+        LOG.info("Fetching Products");
+        Map<String, Product> productMap = productRepository.findByProductNameIn(productNames)
+                .orElseThrow(() -> new OpenEcomException(PRODUCT_NOT_FOUND))
+                .stream()
+                .collect(Collectors.toMap(Product::getProductName, Function.identity()));
+
+        LOG.info("Generating Order Code");
+        String orderCode = generateOrderCode(user.getUserName());
         List<Order> orders = new ArrayList<>();
         for(OrderRequestDTO.InnerOrderRequestDTO orderRequests : orderRequestDTO.getOrderRequests()) {
-            Product product = productRepository.findByProductName(orderRequests.getProductName())
-                    .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND + orderRequests.getProductName()));
+            Product product = productMap.get(orderRequests.getProductName());
 
+            LOG.info("Decrementing Products");
             int checkUpdates = productRepository.decrementProductQuantity(product.getProductId(), orderRequests.getProductQuantity());
             if(checkUpdates == 0) {
                 throw new ProductQuantityExceededException(PRODUCT_QUANTITY_MSG + orderRequests.getProductName());
             }
 
-            String orderCode;
-            try {
-                orderCode = futureOrderCode.get();
-            } catch(Exception e) {
-                throw new OpenEcomException(e.getMessage());
-            }
-
+            LOG.info("Mapping Orders");
             Order order = this.mapOrder(orderRequests, user, product.getProductId(), orderCode, orderRequestDTO.getAddress());
             orders.add(order);
         }
 
         // Payment Gateway Logic
+        LOG.info("Initiating Payment");
         String response = paymentService.makePayment();
 
         if(response.equals(SUCCESS)) {
+            LOG.info("Saving Orders");
             orderRepository.saveAll(orders);
         } else {
             response = FAIL;
@@ -116,11 +124,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ViewOrderResponseDTO viewOrder(ViewOrderRequestDTO orderRequestDTO) {
+        LOG.info("Fetching Orders");
+        long startTime = System.currentTimeMillis();
         List<OrderNativeSqlResponseDTO> sqlResponse = viewOrderDetailsRepository.fetchOrders(
                 orderRequestDTO.getUserEmail(),
                 orderRequestDTO.getOrderDate(),
                 orderRequestDTO.getOrderCode()
         );
+        long endTime = System.currentTimeMillis();
+        LOG.info("Order Fetched in {} ms", (endTime - startTime));
 
         return this.mapViewOrderDTO(sqlResponse);
     }
@@ -160,6 +172,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     protected ViewOrderResponseDTO mapViewOrderDTO(List<OrderNativeSqlResponseDTO> sqlResponse) {
+        long startTime = System.currentTimeMillis();
         ViewOrderResponseDTO responseDTO = new ViewOrderResponseDTO();
         if(sqlResponse == null || sqlResponse.isEmpty()) {
             return null;
@@ -176,12 +189,14 @@ public class OrderServiceImpl implements OrderService {
             orderResponseDTO.setOrderCode(orderKey.orderCode());
             orderResponseDTO.setOrderDate(orderKey.orderDate());
 
-            mapAndSetOrderProductResponseDTO(sqlResponse, orderResponseDTO);
+            mapAndSetOrderProductResponseDTO(orderMap.get(orderKey), orderResponseDTO);
 
             orderResponseList.add(orderResponseDTO);
         }
 
         responseDTO.setOrders(orderResponseList);
+        long endTime = System.currentTimeMillis();
+        LOG.info("Time taken to map the orders: {} ms", (endTime - startTime));
         return responseDTO;
     }
 
