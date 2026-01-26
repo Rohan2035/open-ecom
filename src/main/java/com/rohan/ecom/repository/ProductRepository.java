@@ -15,11 +15,31 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Modifying
     @Query("""
-            UPDATE Product p set p.productQuantity = p.productQuantity - :quantity
+            UPDATE Product p
+            SET p.productQuantity = p.productQuantity - :quantity,
+            p.reservedQuantity = p.reservedQuantity + :quantity
             WHERE p.productId = :id
             AND p.productQuantity >= :quantity
             """)
-    int decrementProductQuantity(@Param("id") Integer productId, @Param("quantity") int productQuantity);
+    int reserveProductQuantity(@Param("id") Integer productId, @Param("quantity") Integer productQuantity);
+
+    @Modifying
+    @Query("""
+            UPDATE Product p
+            SET p.productQuantity = p.productQuantity + :quantity,
+            p.reservedQuantity = p.reservedQuantity - :quantity
+            WHERE p.productId = :id
+            AND p.productQuantity >= :quantity
+            """)
+    int releaseReservedQuantities(@Param("id") Integer productId, @Param("quantity") Integer productQuantity);
+
+    @Modifying
+    @Query("""
+            UPDATE Product p
+            SET p.reservedQuantity = p.reservedQuantity - :quantity
+            WHERE p.productId = :id
+            """)
+    int confirmOrder(@Param("id") Integer productId, @Param("quantity") Integer productQuantity);
 
     Optional<List<Product>> findByProductNameIn(Set<String> productName);
 }

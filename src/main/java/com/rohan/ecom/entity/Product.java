@@ -17,7 +17,7 @@ public class Product {
     @Column(name = "product_id")
     private Integer productId;
 
-    @Column(name = "productName")
+    @Column(name = "product_name")
     private String productName;
 
     @Column(name = "product_description")
@@ -31,4 +31,7 @@ public class Product {
 
     @Column(name = "product_quantity")
     private Integer productQuantity;
+
+    @Column(name = "reserved_quantity")
+    private Integer reservedQuantity;
 }

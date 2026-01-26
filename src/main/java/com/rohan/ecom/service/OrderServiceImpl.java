@@ -66,37 +66,26 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public String addOrder(OrderRequestDTO orderRequestDTO) {
-
-
-
-        LOG.info("Fetching User");
-        User user = userDetailsRepository.findByEmail(orderRequestDTO.getUserEmail())
-                .orElseThrow(() -> new UserDetailsNotFoundException(USER_NOT_FOUND_MSG +
-                        orderRequestDTO.getUserEmail()));
-        LOG.info("User Fetched");
+        // Fetch User
+        User user = fetchUser(orderRequestDTO.getUserEmail());
 
         LOG.info("Creating Product List");
         Set<String> productNames = orderRequestDTO.getOrderRequests().stream()
                 .map(OrderRequestDTO.InnerOrderRequestDTO::getProductName)
                 .collect(Collectors.toSet());
 
-        LOG.info("Fetching Products");
-        Map<String, Product> productMap = productRepository.findByProductNameIn(productNames)
-                .orElseThrow(() -> new OpenEcomException(PRODUCT_NOT_FOUND))
-                .stream()
-                .collect(Collectors.toMap(Product::getProductName, Function.identity()));
+        // Fetch the product map
+        Map<String, Product> productMap = fetchProductMap(productNames);
 
         LOG.info("Generating Order Code");
         String orderCode = generateOrderCode(user.getUserName());
+
         List<Order> orders = new ArrayList<>();
         for(OrderRequestDTO.InnerOrderRequestDTO orderRequests : orderRequestDTO.getOrderRequests()) {
             Product product = productMap.get(orderRequests.getProductName());
 
-            LOG.info("Decrementing Products");
-            int checkUpdates = productRepository.decrementProductQuantity(product.getProductId(), orderRequests.getProductQuantity());
-            if(checkUpdates == 0) {
-                throw new ProductQuantityExceededException(PRODUCT_QUANTITY_MSG + orderRequests.getProductName());
-            }
+            LOG.info("Reserve Product Quantities");
+            reserveProductQuantities(product.getProductId(), orderRequests.getProductQuantity(), product.getProductName());
 
             LOG.info("Mapping Orders");
             Order order = this.mapOrder(orderRequests, user, product.getProductId(), orderCode, orderRequestDTO.getAddress());
@@ -108,9 +97,21 @@ public class OrderServiceImpl implements OrderService {
         String response = paymentService.makePayment();
 
         if(response.equals(SUCCESS)) {
-            LOG.info("Saving Orders");
-            orderRepository.saveAll(orders);
+            try {
+                LOG.info("Saving Orders");
+                orderRepository.saveAll(orders);
+            } catch(Exception e) {
+                response = FAIL;
+                releaseReservedQuantities(productMap, orderRequestDTO.getOrderRequests());
+                // refund payment
+                paymentService.refundPayment();
+                return response;
+            }
+
+            LOG.info("Confirming Order");
+            confirmOrder(productMap, orderRequestDTO.getOrderRequests());
         } else {
+            releaseReservedQuantities(productMap, orderRequestDTO.getOrderRequests());
             response = FAIL;
         }
 
@@ -212,5 +213,65 @@ public class OrderServiceImpl implements OrderService {
             productList.add(responseDTO);
         }
         orderResponseDTO.setProducts(productList);
+    }
+
+    protected User fetchUser(String userEmail) {
+        LOG.info("Fetching User");
+        long startTime = System.currentTimeMillis();
+        User user = userDetailsRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UserDetailsNotFoundException(USER_NOT_FOUND_MSG +
+                        userEmail));
+        long endTime = System.currentTimeMillis();
+        LOG.info("User Fetched in {} ms", (endTime - startTime));
+
+        return user;
+    }
+
+    protected Map<String, Product> fetchProductMap(Set<String> productNames) {
+        LOG.info("Fetching Products");
+        long startTime = System.currentTimeMillis();
+        Map<String, Product> productMap = productRepository.findByProductNameIn(productNames)
+                .orElseThrow(() -> new OpenEcomException(PRODUCT_NOT_FOUND))
+                .stream()
+                .collect(Collectors.toMap(Product::getProductName, Function.identity()));
+        long endTime = System.currentTimeMillis();
+        LOG.info("Products Fetched in {} ms", (endTime - startTime));
+
+        return productMap;
+    }
+
+    protected void reserveProductQuantities(Integer id, Integer quantity, String productName) {
+        int checkUpdates = productRepository.reserveProductQuantity(id, quantity);
+        if(checkUpdates == 0) {
+            throw new ProductQuantityExceededException(PRODUCT_QUANTITY_MSG + productName);
+        }
+    }
+
+    protected void confirmOrder(Map<String, Product> productMap, List<OrderRequestDTO.InnerOrderRequestDTO> requestDTOList) {
+        for(OrderRequestDTO.InnerOrderRequestDTO requestDTO : requestDTOList) {
+            Product product = productMap.get(requestDTO.getProductName());
+
+            int checkUpdates = productRepository.confirmOrder(product.getProductId(),
+                    requestDTO.getProductQuantity());
+
+            if(checkUpdates == 0) {
+                LOG.error("Product with name: {} and id: {} encountered error while confirming the order",
+                        product.getProductName(), product.getProductId());
+            }
+        }
+    }
+
+    protected void releaseReservedQuantities(Map<String, Product> productMap, List<OrderRequestDTO.InnerOrderRequestDTO> requestDTOList) {
+        for(OrderRequestDTO.InnerOrderRequestDTO requestDTO : requestDTOList) {
+            Product product = productMap.get(requestDTO.getProductName());
+
+            int checkUpdates = productRepository.releaseReservedQuantities(product.getProductId(),
+                    requestDTO.getProductQuantity());
+
+            if(checkUpdates == 0) {
+                LOG.error("Product with name: {} and id: {} encountered error while releasing reserved quantities",
+                        product.getProductName(), product.getProductId());
+            }
+        }
     }
 }

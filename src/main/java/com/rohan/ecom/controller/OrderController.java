@@ -5,6 +5,7 @@ import com.rohan.ecom.dto.OrderRequestDTO;
 import com.rohan.ecom.dto.ViewOrderResponseDTO;
 import com.rohan.ecom.dto.ViewOrderRequestDTO;
 import com.rohan.ecom.service.OrderService;
+import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class OrderController {
 
     @PostMapping("/getorder")
     public ViewOrderResponseDTO getOrder(@RequestBody ViewOrderRequestDTO requestDTO) {
-        // Todo Add Logger
+        LOG.info("Fetching Order");
         return orderService.viewOrder(requestDTO);
     }
 

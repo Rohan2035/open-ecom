@@ -9,4 +9,9 @@ public class PaymentServiceImpl implements PaymentService {
     public String makePayment() {
         return "SUCCESS";
     }
+
+    @Override
+    public String refundPayment() {
+        return "FAILED";
+    }
 }
