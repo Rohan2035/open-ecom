@@ -17,11 +17,13 @@ import com.rohan.ecom.repository.OrderRepository;
 import com.rohan.ecom.repository.ProductRepository;
 import com.rohan.ecom.repository.UserDetailsRepository;
 import com.rohan.ecom.repository.ViewOrderDetailsRepository;
+import com.rohan.ecom.util.Codes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -98,6 +100,17 @@ public class OrderServiceImpl implements OrderService {
 
         if(response.equals(SUCCESS)) {
             try {
+                LOG.info("Confirming Order");
+                confirmOrder(productMap, orderRequestDTO.getOrderRequests());
+            } catch(Exception e) {
+                response = FAIL;
+                releaseReservedQuantities(productMap, orderRequestDTO.getOrderRequests());
+                // Refund Payment
+                paymentService.refundPayment();
+                return response;
+            }
+
+            try {
                 LOG.info("Saving Orders");
                 orderRepository.saveAll(orders);
             } catch(Exception e) {
@@ -107,9 +120,6 @@ public class OrderServiceImpl implements OrderService {
                 paymentService.refundPayment();
                 return response;
             }
-
-            LOG.info("Confirming Order");
-            confirmOrder(productMap, orderRequestDTO.getOrderRequests());
         } else {
             releaseReservedQuantities(productMap, orderRequestDTO.getOrderRequests());
             response = FAIL;
@@ -119,12 +129,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String deleteOrder(OrderRequestDTO orderRequestDTO) {
-        return "";
-    }
-
-    @Override
     public ViewOrderResponseDTO viewOrder(ViewOrderRequestDTO orderRequestDTO) {
+        ViewOrderResponseDTO responseDTO;
+
         LOG.info("Fetching Orders");
         long startTime = System.currentTimeMillis();
         List<OrderNativeSqlResponseDTO> sqlResponse = viewOrderDetailsRepository.fetchOrders(
@@ -135,12 +142,20 @@ public class OrderServiceImpl implements OrderService {
         long endTime = System.currentTimeMillis();
         LOG.info("Order Fetched in {} ms", (endTime - startTime));
 
-        return this.mapViewOrderDTO(sqlResponse);
-    }
+        if(CollectionUtils.isEmpty(sqlResponse)) {
+            LOG.info("Order is Empty");
+            responseDTO = new ViewOrderResponseDTO();
+            responseDTO.setStatus(Codes.FAIL.getCode());
+            responseDTO.setStatusMessage(ORDER_NOT_FOUND);
+            responseDTO.setOrders(List.of());
+            responseDTO.setOrderedBy(EMPTY_STRING);
+            return responseDTO;
+        }
 
-    @Override
-    public List<ViewOrderResponseDTO> viewAllOrder(String username) {
-        return null;
+        responseDTO = this.mapViewOrderDTO(sqlResponse);
+        responseDTO.setStatus(Codes.SUCCESS.getCode());
+        responseDTO.setStatusMessage("Successfully Fetched " + responseDTO.getOrders().size() + " Orders");
+        return responseDTO;
     }
 
     protected Order mapOrder(OrderRequestDTO.InnerOrderRequestDTO orderRequestDTO, User user,
@@ -257,6 +272,7 @@ public class OrderServiceImpl implements OrderService {
             if(checkUpdates == 0) {
                 LOG.error("Product with name: {} and id: {} encountered error while confirming the order",
                         product.getProductName(), product.getProductId());
+                throw new OpenEcomException("Error occurred while confirming order");
             }
         }
     }
@@ -271,6 +287,7 @@ public class OrderServiceImpl implements OrderService {
             if(checkUpdates == 0) {
                 LOG.error("Product with name: {} and id: {} encountered error while releasing reserved quantities",
                         product.getProductName(), product.getProductId());
+                throw new OpenEcomException("Error occurred while confirming order");
             }
         }
     }
