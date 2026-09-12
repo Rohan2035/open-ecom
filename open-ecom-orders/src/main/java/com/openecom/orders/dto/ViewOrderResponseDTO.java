@@ -8,20 +8,4 @@ public record ViewOrderResponseDTO (
          String statusMessage,
          String orderedBy,
          List<OrderResponseDTO> orders
-){
-
-    public record OrderResponseDTO(
-            String orderCode,
-            LocalDate orderDate,
-            List<OrderProductResponseDTO> products
-    ) {
-
-        public record OrderProductResponseDTO(
-                String productName,
-                String productDescription,
-                String productCategory,
-                String productPrice,
-                int productQuantity
-        ) {}
-    }
-}
+){}
