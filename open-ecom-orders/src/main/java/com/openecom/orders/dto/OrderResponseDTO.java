@@ -1,10 +1,13 @@
 package com.openecom.orders.dto;
 
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.util.List;
 
-public record OrderResponseDTO (
-        String orderCode,
-        LocalDate orderDate,
-        List<OrderProductResponseDTO> products
-){}
+@Data
+public class OrderResponseDTO {
+    private String orderCode;
+    private LocalDate orderDate;
+    List<OrderProductResponseDTO> products;
+}

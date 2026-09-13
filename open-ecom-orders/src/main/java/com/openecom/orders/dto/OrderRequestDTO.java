@@ -2,16 +2,21 @@ package com.openecom.orders.dto;
 
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.Data;
 
-public record OrderRequestDTO (
-        String userEmail,
-        String address,
-        List<InnerOrderRequestDTO> orderRequests) {
+@Data
+public class OrderRequestDTO {
 
-    public record InnerOrderRequestDTO(
-            Long productId,
-            String productName,
-            BigDecimal productPrice,
-            int productQuantity
-    ){}
+    private String userEmail;
+    private String address;
+    private List<InnerOrderRequestDTO> orderRequests;
+
+    @Data
+    public static class InnerOrderRequestDTO {
+        private Long productId;
+        private String productName;
+        private BigDecimal productPrice;
+        private int productQuantity;
+    }
 }
+

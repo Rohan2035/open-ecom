@@ -1,11 +1,12 @@
 package com.openecom.orders.dto;
 
-import java.time.LocalDate;
+import lombok.Data;
 import java.util.List;
 
-public record ViewOrderResponseDTO (
-         int status,
-         String statusMessage,
-         String orderedBy,
-         List<OrderResponseDTO> orders
-){}
+@Data
+public class ViewOrderResponseDTO {
+    private int status;
+    private String statusMessage;
+    private String orderedBy;
+    private List<OrderResponseDTO> orders;
+}
