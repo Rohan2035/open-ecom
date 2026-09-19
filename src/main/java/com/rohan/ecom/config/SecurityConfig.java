@@ -1,4 +1,4 @@
-package com.rohan.ecom.config;
+package com.openecom.ecom.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

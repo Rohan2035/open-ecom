@@ -1,8 +1,8 @@
-package com.rohan.ecom.controller;
+package com.openecom.ecom.controller;
 
-import com.rohan.ecom.dto.ProductListDTO;
-import com.rohan.ecom.dto.ProductResponseDTO;
-import com.rohan.ecom.service.ProductService;
+import com.openecom.ecom.dto.ProductListDTO;
+import com.openecom.ecom.dto.ProductResponseDTO;
+import com.openecom.ecom.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

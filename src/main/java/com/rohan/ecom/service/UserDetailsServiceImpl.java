@@ -1,9 +1,9 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
 
-import com.rohan.ecom.dto.UserRequestDTO;
-import com.rohan.ecom.entity.User;
-import com.rohan.ecom.repository.UserDetailsRepository;
+import com.openecom.ecom.dto.UserRequestDTO;
+import com.openecom.ecom.entity.User;
+import com.openecom.ecom.repository.UserDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;

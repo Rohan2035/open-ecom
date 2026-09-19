@@ -1,6 +1,6 @@
-package com.rohan.ecom.repository;
+package com.openecom.ecom.repository;
 
-import com.rohan.ecom.dto.OrderNativeSqlResponseDTO;
+import com.openecom.ecom.dto.OrderNativeSqlResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

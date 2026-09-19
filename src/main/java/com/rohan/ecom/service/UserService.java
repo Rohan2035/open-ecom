@@ -1,6 +1,6 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
-import com.rohan.ecom.dto.UserRequestDTO;
+import com.openecom.ecom.dto.UserRequestDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {

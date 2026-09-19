@@ -1,9 +1,9 @@
-package com.rohan.ecom.component;
+package com.openecom.ecom.component;
 
-import com.rohan.ecom.dto.OrderRequestDTO;
-import com.rohan.ecom.exceptions.OpenEcomException;
-import com.rohan.ecom.exceptions.ProductQuantityExceededException;
-import com.rohan.ecom.repository.QuantityRepository;
+import com.openecom.ecom.dto.OrderRequestDTO;
+import com.openecom.ecom.exceptions.OpenEcomException;
+import com.openecom.ecom.exceptions.ProductQuantityExceededException;
+import com.openecom.ecom.repository.QuantityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

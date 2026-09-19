@@ -1,6 +1,6 @@
-package com.rohan.ecom.repository;
+package com.openecom.ecom.repository;
 
-import com.rohan.ecom.entity.User;
+import com.openecom.ecom.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.rohan.ecom.dto;
+package com.openecom.ecom.dto;
 
 public record LoginDTO(
     String username,

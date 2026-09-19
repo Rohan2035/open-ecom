@@ -1,4 +1,4 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
 import org.springframework.stereotype.Service;
 

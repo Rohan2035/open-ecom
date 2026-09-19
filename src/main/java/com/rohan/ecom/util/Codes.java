@@ -1,4 +1,4 @@
-package com.rohan.ecom.util;
+package com.openecom.ecom.util;
 
 public enum Codes {
     SUCCESS(0), FAIL(-1);

@@ -1,6 +1,6 @@
-package com.rohan.ecom.repository;
+package com.openecom.ecom.repository;
 
-import com.rohan.ecom.entity.Order;
+import com.openecom.ecom.entity.Order;
 import org.hibernate.query.spi.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

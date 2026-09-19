@@ -1,0 +1,23 @@
+.
+├── common-kafka
+│   ├── pom.xml
+│   ├── src
+│   └── target
+├── local.env
+├── mvnw
+├── mvnw.cmd
+├── open-ecom-api-gateway
+│   ├── pom.xml
+│   ├── src
+│   └── target
+├── open-ecom-orders
+│   ├── pom.xml
+│   ├── src
+│   ├── target
+│   └── tasks.md
+├── pom.xml
+├── README.md
+├── src
+│   ├── main
+│   └── test
+└── Task.md

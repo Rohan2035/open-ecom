@@ -1,4 +1,4 @@
-package com.rohan.ecom.exceptions;
+package com.openecom.ecom.exceptions;
 
 
 import lombok.extern.slf4j.Slf4j;

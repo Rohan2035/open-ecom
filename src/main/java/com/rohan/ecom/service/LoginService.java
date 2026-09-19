@@ -1,11 +1,11 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
-import com.rohan.ecom.dto.LoginDTO;
-import com.rohan.ecom.entity.RefreshToken;
-import com.rohan.ecom.exceptions.InvalidCredentialsException;
-import com.rohan.ecom.exceptions.TokenExpiredException;
-import com.rohan.ecom.exceptions.UserDetailsNotFoundException;
-import com.rohan.ecom.repository.RefreshTokenRepository;
+import com.openecom.ecom.dto.LoginDTO;
+import com.openecom.ecom.entity.RefreshToken;
+import com.openecom.ecom.exceptions.InvalidCredentialsException;
+import com.openecom.ecom.exceptions.TokenExpiredException;
+import com.openecom.ecom.exceptions.UserDetailsNotFoundException;
+import com.openecom.ecom.repository.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

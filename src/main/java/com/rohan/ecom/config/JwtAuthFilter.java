@@ -1,7 +1,7 @@
-package com.rohan.ecom.config;
+package com.openecom.ecom.config;
 
-import com.rohan.ecom.service.JwtUtil;
-import com.rohan.ecom.service.UserService;
+import com.openecom.ecom.service.JwtUtil;
+import com.openecom.ecom.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

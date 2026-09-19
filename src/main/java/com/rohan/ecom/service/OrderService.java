@@ -1,8 +1,8 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
-import com.rohan.ecom.dto.OrderRequestDTO;
-import com.rohan.ecom.dto.ViewOrderResponseDTO;
-import com.rohan.ecom.dto.ViewOrderRequestDTO;
+import com.openecom.ecom.dto.OrderRequestDTO;
+import com.openecom.ecom.dto.ViewOrderResponseDTO;
+import com.openecom.ecom.dto.ViewOrderRequestDTO;
 
 import java.util.List;
 import java.util.Map;

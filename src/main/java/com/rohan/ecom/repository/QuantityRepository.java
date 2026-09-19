@@ -1,6 +1,6 @@
-package com.rohan.ecom.repository;
+package com.openecom.ecom.repository;
 
-import com.rohan.ecom.entity.Quantity;
+import com.openecom.ecom.entity.Quantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

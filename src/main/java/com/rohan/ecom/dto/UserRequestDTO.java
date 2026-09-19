@@ -1,4 +1,4 @@
-package com.rohan.ecom.dto;
+package com.openecom.ecom.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.rohan.ecom.entity;
+package com.openecom.ecom.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,10 +1,10 @@
-package com.rohan.ecom.controller;
+package com.openecom.ecom.controller;
 
 
-import com.rohan.ecom.dto.OrderRequestDTO;
-import com.rohan.ecom.dto.ViewOrderRequestDTO;
-import com.rohan.ecom.dto.ViewOrderResponseDTO;
-import com.rohan.ecom.service.OrderService;
+import com.openecom.ecom.dto.OrderRequestDTO;
+import com.openecom.ecom.dto.ViewOrderRequestDTO;
+import com.openecom.ecom.dto.ViewOrderResponseDTO;
+import com.openecom.ecom.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.rohan.ecom;
+package com.openecom.ecom;
 
 import org.junit.jupiter.api.Test;
 

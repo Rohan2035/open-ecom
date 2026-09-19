@@ -1,7 +1,7 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
-import com.rohan.ecom.dto.ProductListDTO;
-import com.rohan.ecom.dto.ProductResponseDTO;
+import com.openecom.ecom.dto.ProductListDTO;
+import com.openecom.ecom.dto.ProductResponseDTO;
 
 public interface ProductService {
      ProductResponseDTO getProductByProductName(String name);

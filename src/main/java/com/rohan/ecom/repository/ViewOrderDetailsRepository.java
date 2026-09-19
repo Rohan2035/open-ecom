@@ -1,6 +1,6 @@
-package com.rohan.ecom.repository;
+package com.openecom.ecom.repository;
 
-import com.rohan.ecom.dto.OrderNativeSqlResponseDTO;
+import com.openecom.ecom.dto.OrderNativeSqlResponseDTO;
 
 import java.time.LocalDate;
 import java.util.List;

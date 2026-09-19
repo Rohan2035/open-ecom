@@ -1,4 +1,4 @@
-package com.rohan.ecom.dto.compositekey;
+package com.openecom.ecom.dto.compositekey;
 
 import java.time.LocalDate;
 

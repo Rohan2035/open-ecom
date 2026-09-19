@@ -1,6 +1,6 @@
-package com.rohan.ecom.repository;
+package com.openecom.ecom.repository;
 
-import com.rohan.ecom.entity.Product;
+import com.openecom.ecom.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

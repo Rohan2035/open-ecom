@@ -1,10 +1,10 @@
-package com.rohan.ecom.service;
+package com.openecom.ecom.service;
 
-import com.rohan.ecom.dto.ProductListDTO;
-import com.rohan.ecom.dto.ProductResponseDTO;
-import com.rohan.ecom.entity.Product;
-import com.rohan.ecom.exceptions.ProductNotFoundException;
-import com.rohan.ecom.repository.ProductRepository;
+import com.openecom.ecom.dto.ProductListDTO;
+import com.openecom.ecom.dto.ProductResponseDTO;
+import com.openecom.ecom.entity.Product;
+import com.openecom.ecom.exceptions.ProductNotFoundException;
+import com.openecom.ecom.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

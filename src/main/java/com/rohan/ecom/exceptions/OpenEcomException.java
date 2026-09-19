@@ -1,4 +1,4 @@
-package com.rohan.ecom.exceptions;
+package com.openecom.ecom.exceptions;
 
 public class OpenEcomException extends RuntimeException {
     public OpenEcomException(String msg) {

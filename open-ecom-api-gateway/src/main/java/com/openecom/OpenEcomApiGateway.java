@@ -1,4 +1,4 @@
-package com.rohan;
+package com.openecom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

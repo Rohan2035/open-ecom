@@ -1,9 +1,9 @@
-package com.rohan.ecom.controller;
+package com.openecom.ecom.controller;
 
-import com.rohan.ecom.dto.LoginDTO;
-import com.rohan.ecom.dto.UserRequestDTO;
-import com.rohan.ecom.service.LoginService;
-import com.rohan.ecom.service.UserService;
+import com.openecom.ecom.dto.LoginDTO;
+import com.openecom.ecom.dto.UserRequestDTO;
+import com.openecom.ecom.service.LoginService;
+import com.openecom.ecom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
