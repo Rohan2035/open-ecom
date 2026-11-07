@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 public class OrderRequestDTO {
 
-    private long clientId;
-    private long clientAddressId;
+    private Long clientId;
+    private Long clientAddressId;
     private List<OrderItemsDTO> orderItems;
 }
