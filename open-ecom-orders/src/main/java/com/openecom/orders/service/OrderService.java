@@ -125,8 +125,4 @@ public class OrderService {
 
         return orderItems;
     }
-
-
-    // ==================== Temporary Listener ================================
-
 }
