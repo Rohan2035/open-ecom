@@ -23,7 +23,7 @@ public class OrderItems {
     private Long productId;
 
     @Column(name = "quantity")
-    private int quantity;
+    private Long quantity;
 
     @Column(name = "price_per_unit")
     private BigDecimal productPrice;
