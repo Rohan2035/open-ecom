@@ -1,6 +1,8 @@
 package com.openecom.orders.service;
 
+import com.openecom.constants.KafkaConstants;
 import com.openecom.events.OrderCreatedEvent;
+import com.openecom.events.OrderItemsEventDTO;
 import com.openecom.orders.dto.OrderItemsDTO;
 import com.openecom.orders.dto.OrderRequestDTO;
 import com.openecom.orders.entity.OrderDetails;
@@ -75,12 +77,9 @@ public class OrderService {
         orderDetailsRepository.save(orderDetails);
         orderItemsRepository.saveAll(orderItems);
 
-        OrderCreatedEvent event = new OrderCreatedEvent();
-        event.setOrderCode(orderCode);
-        event.setTotalAmount(totalAmount);
-        event.setClientId(orderRequestDTO.getClientId());
+        OrderCreatedEvent event = createOrderEvent(orderRequestDTO, totalAmount, orderCode);
 
-         kafkaTemplate.send("order-created-topic", orderCode, event);
+        kafkaTemplate.send(KafkaConstants.ORDER_CREATED_TOPIC, orderCode, event);
 
         return Map.of("status", "order successfully created");
     }
@@ -124,5 +123,25 @@ public class OrderService {
         }
 
         return orderItems;
+    }
+
+    private static OrderCreatedEvent createOrderEvent(OrderRequestDTO requestDTO, BigDecimal totalAmount, String orderCode) {
+        OrderCreatedEvent event = new OrderCreatedEvent();
+        event.setOrderCode(orderCode);
+        event.setTotalAmount(totalAmount);
+        event.setClientId(requestDTO.getClientId());
+
+        List<OrderItemsEventDTO> items = new ArrayList<>();
+        for(OrderItemsDTO item : requestDTO.getOrderItems()) {
+            OrderItemsEventDTO orderEvent = new OrderItemsEventDTO();
+
+            orderEvent.setProductId(item.getProductId());
+            orderEvent.setProductQuantity(item.getProductQuantity());
+
+            items.add(orderEvent);
+        }
+
+        event.setOrderList(items);
+        return event;
     }
 }

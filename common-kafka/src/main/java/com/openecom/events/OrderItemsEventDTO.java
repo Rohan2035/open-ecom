@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderItemDTO {
+public class OrderItemsEventDTO {
     private Long productId;
-    private BigDecimal productPrice;
     private Long productQuantity;
 }
