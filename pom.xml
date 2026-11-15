@@ -26,6 +26,7 @@
         <module>open-ecom-orders</module>
         <module>open-ecom-api-gateway</module>
         <module>common-kafka</module>
+        <module>open-ecom-inventory</module>
     </modules>
 
     <scm>

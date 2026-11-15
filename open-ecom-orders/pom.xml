@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>open-ecom-orders</artifactId>
+    <name>ecom-orders</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

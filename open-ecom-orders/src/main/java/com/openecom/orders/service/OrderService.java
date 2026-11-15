@@ -81,7 +81,10 @@ public class OrderService {
 
         kafkaTemplate.send(KafkaConstants.ORDER_CREATED_TOPIC, orderCode, event);
 
-        return Map.of("status", "order successfully created");
+        return Map.of(
+                "status", "order successfully created",
+                "orderCode", orderCode
+        );
     }
 
     private Map<String, BigDecimal> fetchProductDetails(OrderRequestDTO orderRequestDTO) {
