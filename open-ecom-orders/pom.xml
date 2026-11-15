@@ -51,10 +51,6 @@
             <groupId>com.rohan</groupId>
             <artifactId>common-kafka</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.rohan</groupId>
-            <artifactId>common-kafka</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
